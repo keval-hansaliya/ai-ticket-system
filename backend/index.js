@@ -17,7 +17,7 @@ app.use(express.json());
 app.use("/api/auth", userRoutes);
 app.use("/api/ticket", ticketRoutes);
 
-app.get('/', () => {
+app.get('/', (req, res) => {
   res.send({
     activeStatus: true,
     error: false

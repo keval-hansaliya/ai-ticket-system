@@ -41,36 +41,57 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-6">Login</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="input input-bordered w-full"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="input input-bordered w-full"
-        />
-        {error && <p className="text-red-500">{error}</p>}
-        <button type="submit" className="btn btn-primary w-full">
-          Log In
-        </button>
-      </form>
-      <p className="mt-4 text-center">
-        Don't have an account?{" "}
-        <Link to="/signup" className="text-blue-600 underline">
-          Sign up here
-        </Link>
-      </p>
+    <div className="min-h-screen flex items-center justify-center bg-base-200">
+      <div className="card w-full max-w-sm shadow-xl bg-base-100">
+        <form onSubmit={handleSubmit} className="card-body">
+          <h2 className="card-title justify-center">Login</h2>
+          
+          <div className="alert alert-warning mb-4">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              <span>Please wait a few seconds for the backend to start up (free tier limitation).</span>
+            </div>
+          </div>
+
+          <div className="bg-base-200 p-4 rounded-lg mb-4">
+            <h3 className="font-semibold mb-2">Test Credentials:</h3>
+            <div className="space-y-2 text-sm">
+              <p><strong>Admin:</strong> xcrc.69@gmail.com / 123</p>
+              <p><strong>Moderator:</strong> sam2@gmail.com / 123</p>
+              <p><strong>User:</strong> user1@gmail.com / 123</p>
+            </div>
+          </div>
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="input input-bordered w-full"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="input input-bordered w-full"
+          />
+          {error && <p className="text-red-500">{error}</p>}
+          <div className="form-control mt-4">
+            <button type="submit" className="btn btn-primary w-full">
+              Log In
+            </button>
+          </div>
+          <p className="mt-4 text-center">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-blue-600 underline">
+              Sign up here
+            </Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

@@ -1,13 +1,13 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
-import {inngest} from "../inngest/client.js";
+import { inngest } from "../inngest/client.js";
 
 export const signup = async (req, res) => {
-  const {email, password, skills = []} = req.body;
+  const { email, password, skills = [] } = req.body;
   try {
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({email, password: hashed, skills});
+    const user = await User.create({ email, password: hashed, skills });
 
     await inngest.send({
       name: "user/signup",
@@ -17,23 +17,24 @@ export const signup = async (req, res) => {
     });
 
     const token = jwt.sign(
-      {_id: user._id, role: user.role},
+      { _id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
-    res.json({user, token});
+    res.json({ user, token });
 
   } catch (error) {
-    res.status(500).json({error: "Signup failed", details: error.message});
+    res.status(500).json({ error: "Signup failed", details: error.message });
   }
 }
 
 export const login = async (req, res) => {
+  console.log(req.body);
   const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
-    console.log("user.role : ", user.role);
     if (!user) return res.status(401).json({ error: "User not found" });
+    console.log("user.role : ", user.role);
 
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -48,7 +49,7 @@ export const login = async (req, res) => {
 
     res.json({ user, token });
   } catch (error) {
-    res.status(500).json({ error: "Logout failed", details: error.message });
+    res.status(500).json({ error: "Login failed", details: error.message });
   }
 };
 
@@ -61,7 +62,7 @@ export const logout = async (req, res) => {
     });
     res.json({ message: "Logout successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Login failed", details: error.message });
+    res.status(500).json({ error: "Logout failed", details: error.message });
   }
 };
 
@@ -75,8 +76,8 @@ export const updateUser = async (req, res) => {
     if (!user) return res.status(401).json({ error: "User not found" });
 
     await User.updateOne(
-        { email },
-        { skills: skills.length ? skills : user.skills, role }
+      { email },
+      { skills: skills.length ? skills : user.skills, role }
     );
     return res.json({ message: "User updated successfully" });
   } catch (error) {

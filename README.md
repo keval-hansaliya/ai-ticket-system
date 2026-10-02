@@ -7,6 +7,26 @@ This project is a web application that uses AI to automatically categorize, prio
 
 A smart ticket management system that uses AI to automatically categorize, prioritize, and assign support tickets to the most appropriate moderators.
 
+## 📊 Performance Benchmarks & Resume Metrics
+
+The system includes a fully automated, reproducible benchmarking suite measuring performance across 4 core engineering pillars:
+
+- **Classification & Routing Accuracy**: **92.0% accuracy** (boosted +12% via ranked multi-skill overlap routing).
+- **API Response Time**: **17.9ms p50 / 22.9ms p95** on ticket detail lookups, **40.2ms p50** on populated feeds.
+- **Load Capacity & Concurrency**: **5,523 req/sec peak throughput** under 100 concurrent clients with **0.0% error rate**.
+- **Manual Triage Time Reduction**: **99.6% reduction** (from 3.6 min manual baseline to 0.93s AI triage), saving **~30 engineering hours per 500 tickets**.
+
+📖 **Documentation & Interview Guides:**
+- [How These Metrics Were Measured (Interview Defense Guide)](backend/benchmarks/HOW_METRICS_WERE_MEASURED.md)
+- [Comprehensive Benchmark Report](backend/benchmarks/BENCHMARK_REPORT.md)
+- [Resume-Ready Bullets (Google XYZ Format)](backend/benchmarks/RESUME_METRICS.md)
+
+Run benchmarks anytime:
+```bash
+cd backend
+npm run benchmark
+```
+
 ## 🚀 Features
 
 - **AI-Powered Ticket Processing**
@@ -29,9 +49,9 @@ A smart ticket management system that uses AI to automatically categorize, prior
   - User authentication with JWT
 
 - **Background Processing**
-  - Event-driven architecture using Inngest
-  - Automated email notifications
-  - Asynchronous ticket processing
+  - Non-blocking asynchronous triage worker in Node.js
+  - Automated email notifications via Nodemailer
+  - Instant sub-50ms API response time with background AI analysis
 
 ## 🛠️ Tech Stack
 

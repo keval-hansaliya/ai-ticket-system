@@ -1,0 +1,227 @@
+[
+  {
+    "id": "TICK-001",
+    "category": "Machine Learning / Python",
+    "title": "ModuleNotFoundError: No module named 'torch' in virtualenv",
+    "description": "I created a venv for my machine learning project, but when I run my python script importing pytorch and torchvision it throws ModuleNotFoundError: No module named 'torch'.",
+    "expectedSkills": ["Python", "Machine Learning", "PyTorch"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam@gmail.com"
+  },
+  {
+    "id": "TICK-002",
+    "category": "Machine Learning / Python",
+    "title": "CUDA out of memory error during training batch with PyTorch",
+    "description": "My machine learning training script crashes after 3 epochs with RuntimeError: CUDA out of memory. Tried to allocate 2.00 GiB. How can I optimize gradient accumulation or batch size in python?",
+    "expectedSkills": ["Python", "Machine Learning", "PyTorch", "CUDA"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "sam@gmail.com"
+  },
+  {
+    "id": "TICK-003",
+    "category": "Machine Learning / Python",
+    "title": "How to handle missing NaN values in Pandas DataFrame for ML pipeline",
+    "description": "I am preparing a dataset in Python using Pandas for an XGBoost classification model. Half the columns have null values and I need guidance on imputation techniques.",
+    "expectedSkills": ["Python", "Machine Learning", "Data Science"],
+    "expectedPriority": "low",
+    "expectedModeratorEmail": "sam@gmail.com"
+  },
+  {
+    "id": "TICK-004",
+    "category": "Machine Learning / Python",
+    "title": "Slow convergence with Adam optimizer in deep neural network",
+    "description": "The loss function plateaued at epoch 10 for my vision model written in python. Need advice on learning rate scheduler and hyperparameter tuning.",
+    "expectedSkills": ["Python", "Machine Learning", "Deep Learning"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam@gmail.com"
+  },
+  {
+    "id": "TICK-005",
+    "category": "Machine Learning / Python",
+    "title": "Deploying machine learning model with FastAPI and Python container",
+    "description": "Need help setting up a Dockerfile for a Python machine learning inference API that loads a serialized model artifact without high cold-start latency.",
+    "expectedSkills": ["Python", "Machine Learning", "FastAPI"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "sam@gmail.com"
+  },
+  {
+    "id": "TICK-006",
+    "category": "Fullstack / MERN",
+    "title": "React useEffect infinite re-render loop with state update",
+    "description": "My React component enters an infinite re-render loop whenever I fetch ticket details from the backend and call setState inside useEffect without proper dependency array.",
+    "expectedSkills": ["React", "JavaScript", "Frontend"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "sam2@gmail.com"
+  },
+  {
+    "id": "TICK-007",
+    "category": "Fullstack / MERN",
+    "title": "CORS policy error when sending POST request from React to Express backend",
+    "description": "Access to fetch at http://localhost:5000 from origin http://localhost:3000 has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on Node express server.",
+    "expectedSkills": ["React", "Express", "Node.js", "CORS"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam2@gmail.com"
+  },
+  {
+    "id": "TICK-008",
+    "category": "Fullstack / MERN",
+    "title": "MongoDB CastError: Cast to ObjectId failed for value in Mongoose query",
+    "description": "When hitting the getTicket endpoint in Express with an invalid id string, Mongoose throws BSONError CastError instead of returning a clean 404 response.",
+    "expectedSkills": ["MongoDB", "Mongoose", "Node.js", "Express"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam2@gmail.com"
+  },
+  {
+    "id": "TICK-009",
+    "category": "Fullstack / MERN",
+    "title": "JWT token expiration not handled gracefully on client side in React",
+    "description": "When the JWT token expires, Axios requests fail with 401 Unauthorized, but the user is not redirected to the login page and the app shows blank screen.",
+    "expectedSkills": ["React", "JWT", "Authentication", "Express"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam2@gmail.com"
+  },
+  {
+    "id": "TICK-010",
+    "category": "Fullstack / MERN",
+    "title": "Mongoose aggregation pipeline returning empty results on join",
+    "description": "I am trying to join the tickets collection with users using $lookup in MongoDB and Express, but the populated array field is always empty.",
+    "expectedSkills": ["MongoDB", "Express", "Node.js", "Database"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam2@gmail.com"
+  },
+  {
+    "id": "TICK-011",
+    "category": "DevOps & Testing",
+    "title": "Jest test suite fails with 'SyntaxError: Cannot use import statement outside a module'",
+    "description": "Running npm test with Jest on ES modules in our Node.js codebase throws SyntaxError. Need configuration for babel or experimental-vm-modules in Jest.",
+    "expectedSkills": ["Testing", "Jest", "JavaScript"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "sam3@gmail.com"
+  },
+  {
+    "id": "TICK-012",
+    "category": "DevOps & Testing",
+    "title": "Flaky integration test in GitHub Actions CI/CD pipeline",
+    "description": "Our DevOps pipeline in GitHub Actions randomly fails on the end-to-end testing step because the mock database service is not fully ready before tests execute.",
+    "expectedSkills": ["DevOps", "CI/CD", "Testing"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "sam3@gmail.com"
+  },
+  {
+    "id": "TICK-013",
+    "category": "DevOps & Testing",
+    "title": "Writing unit tests for async Express controller with Jest and Supertest",
+    "description": "Need help mocking Mongoose models and testing HTTP status codes using Jest and Supertest for ticket creation endpoint.",
+    "expectedSkills": ["Testing", "Jest", "JavaScript"],
+    "expectedPriority": "low",
+    "expectedModeratorEmail": "sam3@gmail.com"
+  },
+  {
+    "id": "TICK-014",
+    "category": "DevOps & Testing",
+    "title": "JUnit 5 parameterized tests not discovering test source arguments",
+    "description": "My Java backend unit tests using JUnit are throwing MethodArgumentsProvider exception when running Maven test task in DevOps pipeline.",
+    "expectedSkills": ["JUnit", "Java", "Testing", "DevOps"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam3@gmail.com"
+  },
+  {
+    "id": "TICK-015",
+    "category": "DevOps & Testing",
+    "title": "Code coverage threshold failing in pull request check with Jest",
+    "description": "The build pipeline failed because branch coverage dropped below 80%. Need advice on testing error branches in controllers.",
+    "expectedSkills": ["Testing", "Jest", "DevOps"],
+    "expectedPriority": "low",
+    "expectedModeratorEmail": "sam3@gmail.com"
+  },
+  {
+    "id": "TICK-016",
+    "category": "Blockchain / Web3",
+    "title": "MetaMask 'Internal JSON-RPC error' when calling smart contract method",
+    "description": "When submitting a transaction via web3.js to our Solidity contract deployed on Sepolia testnet, MetaMask reverts with execution reverted error.",
+    "expectedSkills": ["Blockchain", "Web3", "Solidity"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "testing@gmail.com"
+  },
+  {
+    "id": "TICK-017",
+    "category": "Blockchain / Web3",
+    "title": "Gas estimation failure during ERC-20 token transfer",
+    "description": "Web3 provider cannot estimate gas limit for transfer function. Need to verify contract ABI and balance validation on blockchain.",
+    "expectedSkills": ["Blockchain", "Web3", "Ethereum"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "testing@gmail.com"
+  },
+  {
+    "id": "TICK-018",
+    "category": "Blockchain / Web3",
+    "title": "Ethers.js vs Web3.js contract event listener disconnecting silently",
+    "description": "Our dApp event listener stops receiving Transfer events after a few minutes of inactivity on WebSocket provider. How to implement reconnect logic in Web3?",
+    "expectedSkills": ["Web3", "Blockchain", "JavaScript"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "testing@gmail.com"
+  },
+  {
+    "id": "TICK-019",
+    "category": "Blockchain / Web3",
+    "title": "Hardhat verification failed on Etherscan for proxy contract",
+    "description": "Running npx hardhat verify fails for an upgradeable proxy contract on Ethereum blockchain due to constructor arguments mismatch.",
+    "expectedSkills": ["Blockchain", "Web3", "Hardhat"],
+    "expectedPriority": "low",
+    "expectedModeratorEmail": "testing@gmail.com"
+  },
+  {
+    "id": "TICK-020",
+    "category": "Blockchain / Web3",
+    "title": "Reentrancy vulnerability detected in Solidity smart contract audit",
+    "description": "Security review flagged an external call before state update in our blockchain vault contract. Need help applying checks-effects-interactions pattern.",
+    "expectedSkills": ["Blockchain", "Web3", "Solidity", "Security"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "testing@gmail.com"
+  },
+  {
+    "id": "TICK-021",
+    "category": "General / Admin Fallback",
+    "title": "Figma design system export to SVG icons has clipping issues",
+    "description": "Our UI designer exported SVG assets for the dashboard, but vector strokes are clipped outside viewBox. Not a coding bug.",
+    "expectedSkills": ["UI/UX", "Design", "Figma"],
+    "expectedPriority": "low",
+    "expectedModeratorEmail": "xcrc.69@gmail.com"
+  },
+  {
+    "id": "TICK-022",
+    "category": "General / Admin Fallback",
+    "title": "DNS SSL certificate renewal pending for marketing landing page",
+    "description": "Domain DNS CAA record is blocking Let's Encrypt renewal for the public landing domain.",
+    "expectedSkills": ["DNS", "SSL", "Networking"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "xcrc.69@gmail.com"
+  },
+  {
+    "id": "TICK-023",
+    "category": "General / Admin Fallback",
+    "title": "Account billing invoice clarification for enterprise subscription",
+    "description": "Requesting detailed breakdown of seat licenses and credit card charge discrepancy on our organization invoice.",
+    "expectedSkills": ["Billing", "Account Management"],
+    "expectedPriority": "low",
+    "expectedModeratorEmail": "xcrc.69@gmail.com"
+  },
+  {
+    "id": "TICK-024",
+    "category": "Fullstack / MERN",
+    "title": "Express middleware not catching unhandled async errors in route",
+    "description": "Unhandled promise rejections inside async controller methods in Express crash the Node server instead of triggering global error handler middleware.",
+    "expectedSkills": ["Express", "Node.js", "Error Handling"],
+    "expectedPriority": "high",
+    "expectedModeratorEmail": "sam2@gmail.com"
+  },
+  {
+    "id": "TICK-025",
+    "category": "Machine Learning / Python",
+    "title": "Overfitting on small tabular dataset with Random Forest in Scikit-Learn",
+    "description": "Training accuracy is 99% while cross-validation score drops to 65% in Python. Need advice on regularization, max_depth, and feature selection.",
+    "expectedSkills": ["Python", "Machine Learning", "Scikit-Learn"],
+    "expectedPriority": "medium",
+    "expectedModeratorEmail": "sam@gmail.com"
+  }
+]

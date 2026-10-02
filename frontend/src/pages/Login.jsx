@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Sparkles, Mail, Lock, Loader2, ArrowRight, ShieldCheck, UserCheck } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const fillCredentials = (userEmail, userPass) => {
+    setEmail(userEmail);
+    setPassword(userPass);
+    setError("");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/login`, {
@@ -20,7 +30,7 @@ export default function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "Login failed. Check your credentials.");
         return;
       }
 
@@ -35,62 +45,132 @@ export default function Login() {
         navigate("/");
       }
     } catch (err) {
-      setError("Network error, try again");
+      setError("Network error. Please make sure the backend is running.");
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-200">
-      <div className="card w-full max-w-sm shadow-xl bg-base-100">
-        <form onSubmit={handleSubmit} className="card-body">
-          <h2 className="card-title justify-center">Login</h2>
-          
-          <div className="alert alert-warning mb-4">
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="w-full max-w-md relative z-10 space-y-6">
+        {/* Brand header */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-xl shadow-indigo-500/25 mb-1">
+            <Sparkles className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Welcome Back</h1>
+          <p className="text-xs text-slate-400">
+            Sign in to access your intelligent ticket & doubt triage workspace
+          </p>
+        </div>
+
+        {/* Card */}
+        <div className="glass-panel p-6 sm:p-8 rounded-2xl shadow-2xl border border-slate-800 space-y-5">
+          {/* Quick-fill demo credentials */}
+          <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800/80 space-y-2">
+            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+              Quick Test Credentials (Click to prefill):
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => fillCredentials("xcrc.69@gmail.com", "123")}
+                className="flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[11px] font-semibold transition cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => fillCredentials("sam2@gmail.com", "123")}
+                className="flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold transition cursor-pointer"
+              >
+                <UserCheck className="w-3.5 h-3.5" />
+                <span>Mentor</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => fillCredentials("user1@gmail.com", "123")}
+                className="flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold transition cursor-pointer"
+              >
+                <span>Student</span>
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-              <span>Please wait a few seconds for the backend to start up (free tier limitation).</span>
+              <label className="block text-xs font-semibold uppercase text-slate-300 mb-1.5 tracking-wider">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="bg-base-200 p-4 rounded-lg mb-4">
-            <h3 className="font-semibold mb-2">Test Credentials:</h3>
-            <div className="space-y-2 text-sm">
-              <p><strong>Admin:</strong> xcrc.69@gmail.com / 123</p>
-              <p><strong>Moderator:</strong> sam2@gmail.com / 123</p>
-              <p><strong>User:</strong> user1@gmail.com / 123</p>
+            <div>
+              <label className="block text-xs font-semibold uppercase text-slate-300 mb-1.5 tracking-wider">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                />
+              </div>
             </div>
-          </div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="input input-bordered w-full"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="input input-bordered w-full"
-          />
-          {error && <p className="text-red-500">{error}</p>}
-          <div className="form-control mt-4">
-            <button type="submit" className="btn btn-primary w-full">
-              Log In
+            {error && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Logging in...</span>
+                </>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
-          </div>
-          <p className="mt-4 text-center">
+          </form>
+
+          <p className="text-center text-xs text-slate-400">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-600 underline">
-              Sign up here
+            <Link to="/signup" className="text-indigo-400 hover:text-indigo-300 font-semibold underline">
+              Create an account
             </Link>
           </p>
-        </form>
+        </div>
       </div>
     </div>
   );

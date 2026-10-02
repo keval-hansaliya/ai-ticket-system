@@ -1,63 +1,80 @@
-import { createAgent, gemini } from "@inngest/agent-kit";
+import { GoogleGenAI, Type } from "@google/genai";
 
-const analyzeTicket = async (ticket) => {
-  const supportAgent = createAgent({
-    model: gemini({
-      model: "gemini-1.5-flash-8b",
-      apiKey: process.env.GEMINI_API_KEY,
-    }),
-    name: "AI Ticket Triage Assistant",
-    system: `You are an expert AI assistant that processes technical support tickets. 
+/**
+ * Analyzes a support ticket using the official Google Gen AI SDK.
+ * Leverages structured JSON schema for reliable, type-safe responses.
+ * Returns null if AI service is not configured or an error occurs.
+ */
+export const analyzeTicket = async (ticket) => {
+  const apiKey = process.env.GEMINI_API_KEY;
 
-Your job is to:
-1. Summarize the issue.
-2. Estimate its priority.
-3. Provide helpful notes and resource links for human moderators.
-4. List relevant technical skills required.
+  if (!apiKey) {
+    console.warn("[AI] GEMINI_API_KEY not configured. Skipping automated AI analysis.");
+    return null;
+  }
 
-IMPORTANT:
-- Respond with *only* valid raw JSON.
-- Do NOT include markdown, code fences, comments, or any extra formatting.
-- The format must be a raw JSON object.
+  const prompt = `You are an expert AI support triage assistant that processes technical support tickets.
 
-Repeat: Do not wrap your output in markdown or code fences.`,
-  });
+Analyze the following support ticket and classify its priority, skills needed, and provide diagnostic troubleshooting steps.
 
-  const response =
-    await supportAgent.run(`You are a ticket triage agent. Only return a strict JSON object with no extra text, headers, or markdown.
-        
-Analyze the following support ticket and provide a JSON object with:
-
-- summary: A short 1-2 sentence summary of the issue.
-- priority: One of "low", "medium", or "high".
-- helpfulNotes: A detailed technical explanation that a moderator can use to solve this issue. Include useful external links or resources if possible.
-- relatedSkills: An array of relevant skills required to solve the issue (e.g., ["React", "MongoDB"]).
-
-Respond ONLY in this JSON format and do not include any other text or markdown in the answer:
-
-{
-"summary": "Short summary of the ticket",
-"priority": "high",
-"helpfulNotes": "Here are useful tips...",
-"relatedSkills": ["React", "Node.js"]
-}
-
----
-
-Ticket information:
-
-- Title: ${ticket.title}
-- Description: ${ticket.description}`);
-
-  const raw = response.output[0].content;
+Ticket Title: ${ticket.title}
+Ticket Description: ${ticket.description}`;
 
   try {
-    const match = raw.match(/```json\s*([\s\S]*?)\s*```/i);
-    const jsonString = match ? match[1] : raw.trim();
-    return JSON.parse(jsonString);
-  } catch (e) {
-    console.log("Failed to parse JSON from AI response" + e.message);
-    return null; // watch out for this
+    const ai = new GoogleGenAI({ apiKey });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash-lite",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            summary: {
+              type: Type.STRING,
+              description: "A short 1-2 sentence summary of the issue.",
+            },
+            priority: {
+              type: Type.STRING,
+              description: 'One of "low", "medium", or "high".',
+              enum: ["low", "medium", "high"],
+            },
+            helpfulNotes: {
+              type: Type.STRING,
+              description: "A detailed technical explanation or diagnostic advice for moderators.",
+            },
+            relatedSkills: {
+              type: Type.ARRAY,
+              description: "Array of relevant technical skills required to solve this ticket (e.g. Selenium, React, MongoDB).",
+              items: {
+                type: Type.STRING,
+              },
+            },
+          },
+          required: ["summary", "priority", "helpfulNotes", "relatedSkills"],
+        },
+        temperature: 0.2,
+      },
+    });
+
+    const rawContent = response.text;
+    if (!rawContent) {
+      throw new Error("Empty response received from Gemini SDK");
+    }
+
+    const parsed = JSON.parse(rawContent);
+    return {
+      summary: parsed.summary || ticket.title,
+      priority: ["low", "medium", "high"].includes(parsed.priority?.toLowerCase())
+        ? parsed.priority.toLowerCase()
+        : "medium",
+      helpfulNotes: parsed.helpfulNotes || "",
+      relatedSkills: Array.isArray(parsed.relatedSkills) ? parsed.relatedSkills : [],
+    };
+  } catch (err) {
+    console.error("[AI] Gemini SDK call failed:", err.message);
+    return null;
   }
 };
 

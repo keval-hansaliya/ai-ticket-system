@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, default: "user", enum: ["user", "moderator", "admin"] },
     skills: [String],
+    skillsEmbedding: { type: [Number], default: [] },
     createdAt: { type: Date, default: Date.now },
 });
 

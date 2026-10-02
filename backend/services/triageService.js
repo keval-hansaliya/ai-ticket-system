@@ -1,6 +1,6 @@
 import Ticket from "../models/ticket.js";
 import User from "../models/user.js";
-import analyzeTicket from "../utils/ai.js";
+import { analyzeTicket, generateEmbedding, cosineSimilarity } from "../utils/ai.js";
 import { sendMail } from "../utils/mailer.js";
 
 /**
@@ -8,10 +8,11 @@ import { sendMail } from "../utils/mailer.js";
  * Runs asynchronously without blocking the Express response.
  *
  * Steps:
- * 1. AI Analysis (skills, priority, helpful troubleshooting notes)
- * 2. Intelligent skill-matching against registered moderators
- * 3. Assign ticket to best matched moderator (or fallback to admin)
- * 4. Dispatch notification email to moderator
+ * 1. AI Analysis with In-Context Team Skills Grounding
+ * 2. Vector Embedding & Semantic Similarity Matching (Cosine distance)
+ * 3. Keyword-overlap fallback matching if embedding service is offline
+ * 4. Assign ticket to best matched moderator (or fallback to admin)
+ * 5. Dispatch notification email to moderator
  */
 export const triageTicket = async (ticketId) => {
   try {
@@ -23,12 +24,12 @@ export const triageTicket = async (ticketId) => {
 
     console.log(`[TriageWorker] Starting AI triage for ticket "${ticket.title}" (${ticketId})...`);
 
+    // Fetch unique moderator skills to ground the AI's tag extraction
+    const availableSkills = await User.distinct("skills", { role: "moderator" });
+
     // 1. Run AI analysis
-    const aiResponse = await analyzeTicket(ticket);
+    const aiResponse = await analyzeTicket(ticket, availableSkills);
     let skills = [];
-
-    console.log(aiResponse.relatedSkills);
-
 
     if (aiResponse) {
       skills = Array.isArray(aiResponse.relatedSkills) ? aiResponse.relatedSkills : [];
@@ -44,7 +45,7 @@ export const triageTicket = async (ticketId) => {
       });
       console.log(`[TriageWorker] AI classified priority: ${priority}, skills: [${skills.join(", ")}]`);
     } else {
-      // AI analysis unavailable or failed: set clean defaults (no fake skills/notes)
+      // AI analysis unavailable or failed: set clean defaults
       await Ticket.findByIdAndUpdate(ticketId, {
         priority: ticket.priority || "medium",
         helpfulNotes: "",
@@ -54,35 +55,80 @@ export const triageTicket = async (ticketId) => {
       console.log(`[TriageWorker] AI triage skipped or failed. Proceeding with standard moderator assignment.`);
     }
 
-    // 2. Intelligent skill-based moderator matching (highest skill match score)
+    // 2. Vector Embedding & Semantic Search Moderator Matching
     let moderator = null;
-    if (skills.length > 0) {
-      const lowerSkills = skills.map((s) => s.toLowerCase().trim());
-      const moderators = await User.find({ role: "moderator" });
+    const moderators = await User.find({ role: "moderator" });
 
-      let bestModerator = null;
-      let maxMatches = 0;
+    if (moderators.length > 0) {
+      try {
+        const ticketText = `${ticket.title}\n${ticket.description}`;
+        const ticketEmbedding = await generateEmbedding(ticketText);
 
-      for (const mod of moderators) {
-        if (!Array.isArray(mod.skills) || mod.skills.length === 0) continue;
-        const modSkills = mod.skills.map((s) => s.toLowerCase().trim());
+        if (ticketEmbedding) {
+          let bestModerator = null;
+          let highestSimilarity = -1;
 
-        let matchScore = 0;
-        for (const reqSkill of lowerSkills) {
-          if (modSkills.some((ms) => ms === reqSkill || ms.includes(reqSkill) || reqSkill.includes(ms))) {
-            matchScore += 1;
+          for (const mod of moderators) {
+            if (!Array.isArray(mod.skills) || mod.skills.length === 0) continue;
+
+            let modEmbedding = mod.skillsEmbedding;
+            // Generate and cache moderator embedding if not already stored
+            if (!Array.isArray(modEmbedding) || modEmbedding.length === 0) {
+              modEmbedding = await generateEmbedding(mod.skills.join(", "));
+              if (modEmbedding) {
+                await User.findByIdAndUpdate(mod._id, { skillsEmbedding: modEmbedding });
+              }
+            }
+
+            if (modEmbedding) {
+              const similarity = cosineSimilarity(ticketEmbedding, modEmbedding);
+              console.log(`[TriageWorker] Semantic similarity with ${mod.email}: ${similarity.toFixed(4)}`);
+              if (similarity > highestSimilarity) {
+                highestSimilarity = similarity;
+                bestModerator = mod;
+              }
+            }
+          }
+
+          // Use best match if above semantic threshold (0.35)
+          if (highestSimilarity >= 0.35 && bestModerator) {
+            moderator = bestModerator;
+            console.log(
+              `[TriageWorker] Semantic Vector match found: ${moderator.email} (Cosine Similarity: ${highestSimilarity.toFixed(4)})`
+            );
+          }
+        }
+      } catch (embErr) {
+        console.warn(`[TriageWorker] Vector similarity matching failed, falling back to keyword matching:`, embErr.message);
+      }
+
+      // Keyword Overlap Fallback if semantic match was inconclusive
+      if (!moderator && skills.length > 0) {
+        const lowerSkills = skills.map((s) => s.toLowerCase().trim());
+        let bestKeywordMod = null;
+        let maxMatches = 0;
+
+        for (const mod of moderators) {
+          if (!Array.isArray(mod.skills) || mod.skills.length === 0) continue;
+          const modSkills = mod.skills.map((s) => s.toLowerCase().trim());
+
+          let matchScore = 0;
+          for (const reqSkill of lowerSkills) {
+            if (modSkills.some((ms) => ms === reqSkill || ms.includes(reqSkill) || reqSkill.includes(ms))) {
+              matchScore += 1;
+            }
+          }
+
+          if (matchScore > maxMatches) {
+            maxMatches = matchScore;
+            bestKeywordMod = mod;
           }
         }
 
-        if (matchScore > maxMatches) {
-          maxMatches = matchScore;
-          bestModerator = mod;
+        if (maxMatches > 0) {
+          moderator = bestKeywordMod;
+          console.log(`[TriageWorker] Keyword fallback matched moderator: ${moderator.email} (score: ${maxMatches})`);
         }
-      }
-
-      if (maxMatches > 0) {
-        moderator = bestModerator;
-        console.log(`[TriageWorker] Best skill-matched moderator: ${moderator.email} (score: ${maxMatches})`);
       }
     }
 

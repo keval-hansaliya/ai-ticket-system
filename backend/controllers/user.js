@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import { sendWelcomeEmail } from "../services/triageService.js";
+import { generateEmbedding } from "../utils/ai.js";
 
 export const signup = async (req, res) => {
   const { email, password, skills = [] } = req.body;
@@ -12,7 +13,13 @@ export const signup = async (req, res) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hashed, skills });
+
+    let skillsEmbedding = [];
+    if (Array.isArray(skills) && skills.length > 0) {
+      skillsEmbedding = (await generateEmbedding(skills.join(", "))) || [];
+    }
+
+    const user = await User.create({ email, password: hashed, skills, skillsEmbedding });
 
     // Non-blocking welcome email dispatch
     setImmediate(() => {
@@ -82,10 +89,16 @@ export const updateUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: "User not found" });
 
-    await User.updateOne(
-      { email },
-      { skills: skills.length ? skills : user.skills, role }
-    );
+    const updateFields = { role };
+    if (Array.isArray(skills) && skills.length > 0) {
+      updateFields.skills = skills;
+      const embedding = await generateEmbedding(skills.join(", "));
+      if (embedding) {
+        updateFields.skillsEmbedding = embedding;
+      }
+    }
+
+    await User.updateOne({ email }, updateFields);
     return res.json({ message: "User updated successfully" });
   } catch (error) {
     res.status(500).json({ error: "Update failed", details: error.message });
